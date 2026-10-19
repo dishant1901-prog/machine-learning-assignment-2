@@ -1,0 +1,12 @@
+{
+  "correct_rounds": 13,
+  "final_sample_weight": 0.08428329523833165,
+  "final_weight_rank": 1,
+  "maximum_weight_over_selected_rounds": 0.08428329523833165,
+  "misclassified_rounds": 87,
+  "original_dataset_index": 362,
+  "rounds_where_weight_increased": 87,
+  "selected_rounds": 100,
+  "training_position": 221,
+  "true_identity": 36
+}

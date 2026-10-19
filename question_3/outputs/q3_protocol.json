@@ -1,0 +1,72 @@
+{
+  "accuracy_std_ddof": 1,
+  "depth_study": {
+    "bagging_estimators": 100,
+    "deep_capped": 16,
+    "min_samples_leaf": 2,
+    "selected_and_deepest": null,
+    "shallow": 2
+  },
+  "global_class_order": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39
+  ],
+  "master_seed": 242003,
+  "n_repetitions": 30,
+  "protocol_sha256": "1de73ca964c6dbef118e8062803de386a5cd67669f035aab739a33d787dc5f97",
+  "randomness_policy": "Independent deterministic child seeds per repetition and model; all selected hyperparameters remain frozen.",
+  "resamples_sha256": "956e02031c331505858446b1c382315762ceb295ddd8327e103f6d726c3deed0",
+  "resampling_seed": 3179515885,
+  "selected_bagging": {
+    "max_depth": null,
+    "min_samples_leaf": 2,
+    "n_estimators": 200
+  },
+  "selected_boosting": {
+    "n_estimators": 100,
+    "weak_learner_depth": 4
+  },
+  "selected_tree": {
+    "max_depth": null,
+    "min_samples_leaf": 2
+  },
+  "split_sha256": "5f1c58f75abcc0d7df5cc9f24217731e04d1df3a34240723407d96781990c6c2"
+}

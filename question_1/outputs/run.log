@@ -1,0 +1,25 @@
+2026-10-19 14:48:53,428 | INFO | Starting official Q1 run with configured roll-number seed.
+2026-10-19 14:48:53,505 | INFO | Split created; digest=5f1c58f75abcc0d7df5cc9f24217731e04d1df3a34240723407d96781990c6c2; train=240 validation=80 test=80
+2026-10-19 14:48:53,648 | INFO | Baseline depth=2 leaf=1: train=0.0750 validation=0.0750 leaves=3
+2026-10-19 14:48:53,785 | INFO | Baseline depth=2 leaf=2: train=0.0750 validation=0.0750 leaves=3
+2026-10-19 14:48:53,927 | INFO | Baseline depth=2 leaf=4: train=0.0750 validation=0.0750 leaves=3
+2026-10-19 14:48:54,203 | INFO | Baseline depth=4 leaf=1: train=0.1250 validation=0.1250 leaves=5
+2026-10-19 14:48:54,464 | INFO | Baseline depth=4 leaf=2: train=0.1250 validation=0.1250 leaves=5
+2026-10-19 14:48:54,721 | INFO | Baseline depth=4 leaf=4: train=0.1250 validation=0.1250 leaves=5
+2026-10-19 14:48:55,264 | INFO | Baseline depth=8 leaf=1: train=0.2250 validation=0.2125 leaves=9
+2026-10-19 14:48:55,745 | INFO | Baseline depth=8 leaf=2: train=0.2250 validation=0.2125 leaves=9
+2026-10-19 14:48:56,270 | INFO | Baseline depth=8 leaf=4: train=0.2250 validation=0.2125 leaves=9
+2026-10-19 14:48:57,152 | INFO | Baseline depth=16 leaf=1: train=0.4250 validation=0.3250 leaves=17
+2026-10-19 14:48:58,015 | INFO | Baseline depth=16 leaf=2: train=0.4250 validation=0.3250 leaves=17
+2026-10-19 14:48:58,866 | INFO | Baseline depth=16 leaf=4: train=0.4250 validation=0.3250 leaves=17
+2026-10-19 14:49:00,261 | INFO | Baseline depth=None leaf=1: train=1.0000 validation=0.5625 leaves=45
+2026-10-19 14:49:01,628 | INFO | Baseline depth=None leaf=2: train=0.9792 validation=0.5625 leaves=45
+2026-10-19 14:49:02,947 | INFO | Baseline depth=None leaf=4: train=0.9833 validation=0.5500 leaves=40
+2026-10-19 14:52:04,553 | INFO | Bagging B=1: train=0.7208 validation=0.3250 OOB=0.3483 coverage=0.371
+2026-10-19 14:52:04,577 | INFO | Bagging B=5: train=0.9542 validation=0.5000 OOB=0.3095 coverage=0.875
+2026-10-19 14:52:04,624 | INFO | Bagging B=10: train=0.9917 validation=0.7000 OOB=0.3502 coverage=0.988
+2026-10-19 14:52:04,735 | INFO | Bagging B=25: train=1.0000 validation=0.7625 OOB=0.5958 coverage=1.000
+2026-10-19 14:52:04,953 | INFO | Bagging B=50: train=1.0000 validation=0.8250 OOB=0.7000 coverage=1.000
+2026-10-19 14:52:05,401 | INFO | Bagging B=100: train=1.0000 validation=0.8125 OOB=0.7667 coverage=1.000
+2026-10-19 14:52:06,302 | INFO | Bagging B=200: train=1.0000 validation=0.8625 OOB=0.7917 coverage=1.000
+2026-10-19 14:52:08,278 | INFO | Q1 complete. Selected tree depth=None leaf=2; final B=200; wall time=194.84s

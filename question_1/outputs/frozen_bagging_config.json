@@ -1,0 +1,13 @@
+{
+  "frozen_before_test_evaluation": true,
+  "master_seed": 242003,
+  "max_depth": null,
+  "min_samples_leaf": 2,
+  "n_estimators": 200,
+  "prefix_of_single_200_tree_fit": true,
+  "random_state": 188705181,
+  "selection_metric": "validation_accuracy",
+  "split_sha256": "5f1c58f75abcc0d7df5cc9f24217731e04d1df3a34240723407d96781990c6c2",
+  "tie_break": "smaller ensemble",
+  "validation_accuracy": 0.8625
+}

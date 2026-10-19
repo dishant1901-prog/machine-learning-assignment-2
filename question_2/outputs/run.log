@@ -1,0 +1,29 @@
+2026-10-19 16:17:18,937 | INFO | Loaded locked split 5f1c58f75abcc0d7df5cc9f24217731e04d1df3a34240723407d96781990c6c2
+2026-10-19 16:17:18,945 | INFO | Toy SAMME round: error=0.333333 alpha=1.386294 normalization=2.000000
+2026-10-19 16:17:18,945 | INFO | Fitting SAMME depth=1 for up to 100 rounds
+2026-10-19 16:17:26,632 | INFO | Depth=1 achieved 100 rounds; termination=requested_rounds_completed
+2026-10-19 16:17:26,656 | INFO | Depth=1 rounds=10: train=0.0500 validation=0.0500
+2026-10-19 16:17:26,705 | INFO | Depth=1 rounds=25: train=0.1000 validation=0.1000
+2026-10-19 16:17:26,799 | INFO | Depth=1 rounds=50: train=0.1250 validation=0.1000
+2026-10-19 16:17:26,988 | INFO | Depth=1 rounds=100: train=0.1583 validation=0.1125
+2026-10-19 16:17:26,990 | INFO | Fitting SAMME depth=2 for up to 100 rounds
+2026-10-19 16:17:42,506 | INFO | Depth=2 achieved 100 rounds; termination=requested_rounds_completed
+2026-10-19 16:17:42,537 | INFO | Depth=2 rounds=10: train=0.1208 validation=0.0750
+2026-10-19 16:17:42,589 | INFO | Depth=2 rounds=25: train=0.1542 validation=0.0875
+2026-10-19 16:17:42,686 | INFO | Depth=2 rounds=50: train=0.2750 validation=0.1625
+2026-10-19 16:17:42,908 | INFO | Depth=2 rounds=100: train=0.4042 validation=0.2000
+2026-10-19 16:17:42,909 | INFO | Fitting SAMME depth=3 for up to 100 rounds
+2026-10-19 16:18:04,984 | INFO | Depth=3 achieved 100 rounds; termination=requested_rounds_completed
+2026-10-19 16:18:05,006 | INFO | Depth=3 rounds=10: train=0.2708 validation=0.1625
+2026-10-19 16:18:05,060 | INFO | Depth=3 rounds=25: train=0.5250 validation=0.2500
+2026-10-19 16:18:05,157 | INFO | Depth=3 rounds=50: train=0.4875 validation=0.2250
+2026-10-19 16:18:05,340 | INFO | Depth=3 rounds=100: train=0.7458 validation=0.3250
+2026-10-19 16:18:05,340 | INFO | Fitting SAMME depth=4 for up to 100 rounds
+2026-10-19 16:18:34,383 | INFO | Depth=4 achieved 100 rounds; termination=requested_rounds_completed
+2026-10-19 16:18:34,405 | INFO | Depth=4 rounds=10: train=0.3708 validation=0.1750
+2026-10-19 16:18:34,460 | INFO | Depth=4 rounds=25: train=0.6250 validation=0.2625
+2026-10-19 16:18:34,600 | INFO | Depth=4 rounds=50: train=0.9875 validation=0.4375
+2026-10-19 16:18:34,794 | INFO | Depth=4 rounds=100: train=1.0000 validation=0.5125
+2026-10-19 16:18:34,940 | INFO | Frozen boosting selection before test: depth=4 rounds=100 validation=0.5125
+2026-10-19 16:18:37,606 | INFO | Refitting frozen Q1 bagging model for Q2(d) face-level comparison
+2026-10-19 16:21:46,011 | INFO | Q2 run complete: selected depth=4 rounds=100 wall time=267.12s

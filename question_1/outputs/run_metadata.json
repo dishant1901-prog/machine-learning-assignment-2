@@ -1,0 +1,18 @@
+{
+  "derived_seeds": {
+    "bagging": 188705181,
+    "baseline": 3936509142
+  },
+  "master_seed": 242003,
+  "numpy": "2.2.6",
+  "output_directory": "C:\\Users\\disha\\OneDrive\\Desktop\\ml assignment new\\assignment_2\\question_1\\outputs",
+  "pandas": "2.3.2",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.13.7 (tags/v3.13.7:bcee1c3, Aug 14 2025, 14:15:11) [MSC v.1944 64 bit (AMD64)]",
+  "run_ended_utc": "2026-10-19T09:22:08.264607+00:00",
+  "run_started_utc": "2026-10-19T09:18:53.428224+00:00",
+  "scikit_learn": "1.7.2",
+  "split_created": true,
+  "split_sha256": "5f1c58f75abcc0d7df5cc9f24217731e04d1df3a34240723407d96781990c6c2",
+  "wall_time_seconds": 194.83638970000902
+}

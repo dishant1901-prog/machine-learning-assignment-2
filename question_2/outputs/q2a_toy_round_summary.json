@@ -1,0 +1,14 @@
+{
+  "initial_weight_sum": 1.0,
+  "learner_weight_alpha": 1.3862943611198908,
+  "n_classes": 3,
+  "n_samples": 9,
+  "normalization_constant": 2.0,
+  "random_error_threshold": 0.6666666666666666,
+  "random_state": 2912476328,
+  "status": "accepted",
+  "update_rule": "w_i <- w_i * exp(alpha * I[prediction_i != y_i]), then normalize",
+  "updated_weight_sum": 1.0,
+  "weak_learner_depth": 1,
+  "weighted_error": 0.3333333333333333
+}

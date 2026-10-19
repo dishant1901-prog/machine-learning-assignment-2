@@ -1,0 +1,7 @@
+model,learners,train_accuracy,validation_accuracy,test_accuracy,training_time_seconds,timing_scope
+bagging,25,1.0,0.7625,0.7625,23.03625519986963,cumulative base-learner fit calls
+boosting,25,0.625,0.2625,0.2625,7.123006700188853,cumulative base-learner fit calls
+bagging,50,1.0,0.825,0.8125,45.33108089992311,cumulative base-learner fit calls
+boosting,50,0.9875,0.4375,0.4375,14.443564600020181,cumulative base-learner fit calls
+bagging,100,1.0,0.8125,0.8375,90.92683299974306,cumulative base-learner fit calls
+boosting,100,1.0,0.5125,0.525,28.804960599867627,cumulative base-learner fit calls

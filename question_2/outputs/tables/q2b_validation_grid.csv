@@ -1,0 +1,17 @@
+weak_learner_depth,rounds,available,achieved_rounds,termination_reason,train_accuracy,validation_accuracy,cumulative_learner_fit_time_seconds
+1,10,True,100,requested_rounds_completed,0.05,0.05,0.7642154000350274
+1,25,True,100,requested_rounds_completed,0.1,0.1,1.9129278000327758
+1,50,True,100,requested_rounds_completed,0.125,0.1,3.78597109997645
+1,100,True,100,requested_rounds_completed,0.15833333333333333,0.1125,7.455081400286872
+2,10,True,100,requested_rounds_completed,0.12083333333333333,0.075,1.4391047999961302
+2,25,True,100,requested_rounds_completed,0.15416666666666667,0.0875,3.5758788000093773
+2,50,True,100,requested_rounds_completed,0.275,0.1625,7.282261599961203
+2,100,True,100,requested_rounds_completed,0.4041666666666667,0.2,15.243715399876237
+3,10,True,100,requested_rounds_completed,0.2708333333333333,0.1625,2.3066103999735788
+3,25,True,100,requested_rounds_completed,0.525,0.25,5.670657700044103
+3,50,True,100,requested_rounds_completed,0.4875,0.225,11.076342500047758
+3,100,True,100,requested_rounds_completed,0.7458333333333333,0.325,21.828219500312116
+4,10,True,100,requested_rounds_completed,0.37083333333333335,0.175,2.868042200105265
+4,25,True,100,requested_rounds_completed,0.625,0.2625,7.123006700188853
+4,50,True,100,requested_rounds_completed,0.9875,0.4375,14.443564600020181
+4,100,True,100,requested_rounds_completed,1.0,0.5125,28.804960599867627

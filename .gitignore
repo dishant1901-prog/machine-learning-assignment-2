@@ -1,0 +1,9 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+shared/data/
+report/.chrome-profile/
+report/_rendered_report.html
+report/final_report.pdf
+report/*_preview.png
+report/report_contact_sheet.png

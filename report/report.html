@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Bagging, Boosting and Bias–Variance on Face Recognition</title>
+<style>
+  @page { size: Letter; margin: 0; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: white; color: #111; }
+  body { font-family: "Times New Roman", Times, serif; font-size: 9.25pt; line-height: 1.12; }
+  .page {
+    width: 8.5in; height: 11in; padding: 0.48in 0.58in 0.43in;
+    position: relative; overflow: hidden; break-after: page; page-break-after: always;
+  }
+  .page:last-child { break-after: auto; page-break-after: auto; }
+  .columns { display: grid; grid-template-columns: 1fr 1fr; column-gap: 0.25in; align-items: start; }
+  .col { min-width: 0; }
+  h1 { margin: 0; text-align: center; font-size: 17pt; line-height: 1.05; font-weight: 700; }
+  .author { text-align: center; font-size: 10.5pt; margin: 7px 0 3px; }
+  .metadata { text-align: center; font-size: 8pt; line-height: 1.18; margin-bottom: 7px; }
+  h2 { font-size: 11.2pt; margin: 6px 0 3px; line-height: 1.05; border-bottom: 0.35px solid #777; padding-bottom: 1px; }
+  h3 { font-size: 9.7pt; margin: 5px 0 2px; line-height: 1.05; }
+  p { margin: 0 0 4px; text-align: justify; hyphens: auto; }
+  .abstract { font-size: 8.9pt; margin-bottom: 5px; }
+  .abstract strong { display: block; text-align: center; font-size: 9.5pt; margin-bottom: 2px; }
+  table { width: 100%; border-collapse: collapse; margin: 3px 0 5px; font-size: 7.35pt; line-height: 1.07; }
+  th, td { border-top: 0.35px solid #777; border-bottom: 0.35px solid #777; padding: 1.7px 2.2px; text-align: right; vertical-align: middle; }
+  th { font-weight: 700; background: #f2f2f2; }
+  th:first-child, td:first-child { text-align: left; }
+  .tight { font-size: 6.85pt; }
+  .tiny { font-size: 6.35pt; }
+  .equation { text-align: center; margin: 4px 0; font-style: italic; font-size: 9pt; }
+  figure { margin: 4px 0 5px; }
+  figure img { display: block; width: 100%; height: auto; }
+  figcaption { margin-top: 2px; font-size: 7.2pt; line-height: 1.08; text-align: justify; }
+  .wide { margin: 4px auto 5px; }
+  .wide img { width: 100%; max-height: 2.12in; object-fit: contain; }
+  .wide.tall img { max-height: 2.42in; }
+  .case-figure img { max-height: 4.9in; object-fit: contain; }
+  .compact-figure img { max-height: 2.65in; object-fit: contain; }
+  .note { font-size: 7.6pt; line-height: 1.08; }
+  .result { font-weight: 700; }
+  .page-number { position: absolute; bottom: 0.17in; left: 0; right: 0; text-align: center; font-size: 7.5pt; }
+  .refs { font-size: 7.65pt; line-height: 1.1; }
+  .refs p { padding-left: 12px; text-indent: -12px; margin-bottom: 4px; }
+  code { font-family: Consolas, "Courier New", monospace; font-size: 0.88em; }
+  a { color: #111; text-decoration: none; }
+</style>
+</head>
+<body>
+
+<section class="page">
+  <h1>Bagging, Boosting and Measured Bias–Variance<br>for Olivetti Face Recognition</h1>
+  <div class="author"><strong>Dishant Kaushik</strong> &nbsp;|&nbsp; Roll number: M24MA2003</div>
+  <div class="metadata">
+    Repository: <a href="https://github.com/dishant1901-prog/machine-learning-assignment-2">github.com/dishant1901-prog/machine-learning-assignment-2</a><br>
+    Submission commit: <code>{{COMMIT_HASH}}</code>
+  </div>
+  <div class="abstract"><strong>Abstract</strong>
+    This study compares a decision-tree baseline with scratch implementations of bootstrap aggregation and multiclass SAMME on the 40-class Olivetti face task. All choices are made on one fixed validation split before test evaluation. Bagging 200 unrestricted trees gives 87.50% clean-test accuracy and remains strongest after a centred 16×16 region is removed (70.00%). The selected depth-4, 100-round SAMME model is faster but reaches 52.50% on the clean test. Thirty identity-stratified training resamples show why: bagging has variance 0.02062, compared with 0.64272 for a single tree, whereas boosting has the lowest variance (0.01587) but the highest squared bias (0.88015). Thus stability alone does not determine recognition accuracy.
+  </div>
+  <figure class="wide">
+    <img src="../question_1/outputs/figures/q1a_depth_diagnostics.png" alt="Tree depth diagnostics">
+    <figcaption><strong>Figure 1.</strong> Complete Q1 tree grid. Depth improves fit and validation accuracy, but also produces smaller, less populated leaves.</figcaption>
+  </figure>
+  <div class="columns">
+    <div class="col">
+      <h2>1. Experimental protocol</h2>
+      <p>The Olivetti data contain ten 64×64 grayscale images for each of 40 identities [1]. I used the 4096 raw pixels directly. The numeric part of the roll number gives seed 242003. Within every identity I drew a deterministic 6/2/2 train/validation/test split, giving 240, 80 and 80 images. The saved split digest begins <code>5f1c58f7</code>.</p>
+      <p>Hyperparameters were selected only by clean validation accuracy. The clean and masked test sets were not used for selection. The masked set is a copy of the fixed test set with rows and columns 24–39 set to zero. Training always uses clean faces.</p>
+      <p>I used scikit-learn only for individual <code>DecisionTreeClassifier</code> models [4]. Bootstrap sampling, hard voting, out-of-bag accounting and SAMME were implemented directly. Smaller bagging ensembles are prefixes of the same 200-tree run, which keeps their comparisons paired.</p>
+
+      <h2>2. Q1: Tree and bagging</h2>
+      <h3>2.1 Single-tree baseline</h3>
+      <p>The grid covered maximum depths 2, 4, 8, 16 and unrestricted, with minimum leaf sizes 1, 2 and 4. Unrestricted trees with leaf sizes 1 and 2 tied at 56.25% validation accuracy. The declared simplicity tie-break selected leaf size 2, eliminating singleton leaves without reducing validation accuracy.</p>
+      <table>
+        <tr><th>Model</th><th>Train</th><th>Val.</th><th>Test</th><th>Leaves</th><th>Mean/leaf</th><th>Singleton</th></tr>
+        <tr><td>Tree (unrestricted, leaf 2)</td><td>97.92</td><td>56.25</td><td>57.50</td><td>45</td><td>5.33</td><td>0%</td></tr>
+      </table>
+      <p>For leaf size 2, increasing depth from 2 to unrestricted raises the leaf count from 3 to 45 and lowers mean occupancy from 80.00 to 5.33. Training accuracy rises from 7.50% to 97.92%, while validation reaches only 56.25%. This widening gap is the measured cost of increasingly specialised partitions.</p>
+    </div>
+    <div class="col">
+      <h3>2.2 Bagging from scratch</h3>
+      <p>Each tree receives 240 bootstrap draws and uses the frozen tree setting. Aggregation follows Breiman's plurality-vote construction [2].</p>
+      <table class="tight">
+        <tr><th>B</th><th>Train</th><th>Val.</th><th>Test</th><th>Distinct</th></tr>
+        <tr><td>1</td><td>72.08</td><td>32.50</td><td>35.00</td><td>151.00</td></tr>
+        <tr><td>5</td><td>95.42</td><td>50.00</td><td>62.50</td><td>153.40</td></tr>
+        <tr><td>10</td><td>99.17</td><td>70.00</td><td>68.75</td><td>151.50</td></tr>
+        <tr><td>25</td><td>100.00</td><td>76.25</td><td>76.25</td><td>151.16</td></tr>
+        <tr><td>50</td><td>100.00</td><td>82.50</td><td>81.25</td><td>150.76</td></tr>
+        <tr><td>100</td><td>100.00</td><td>81.25</td><td>83.75</td><td>151.05</td></tr>
+        <tr><td>200</td><td>100.00</td><td><strong>86.25</strong></td><td>87.50</td><td>151.85</td></tr>
+      </table>
+      <p>For sample size <em>n</em>, the expected number of represented cases is <em>n</em>[1−(1−1/<em>n</em>)<sup><em>n</em></sup>]. At <em>n</em>=240 this is 151.893 (63.289%), close to 1−e<sup>−1</sup>. The measured 200-tree mean is 151.85 (63.271%). Validation accuracy is not monotone—B=50 slightly exceeds B=100—but B=200 is best and was frozen before its test result was used.</p>
+    </div>
+  </div>
+  <div class="page-number">1 / 7</div>
+</section>
+
+<section class="page">
+  <h2>2.3 OOB accuracy, disagreement and margin</h2>
+  <figure class="wide">
+    <img src="../question_1/outputs/figures/q1c_oob_disagreement_margin.png" alt="OOB, disagreement and margin versus ensemble size">
+    <figcaption><strong>Figure 2.</strong> OOB accuracy and coverage, validation-set pairwise disagreement, and validation vote margin. B=1 disagreement is undefined; its unit margin is a one-vote artifact.</figcaption>
+  </figure>
+  <div class="columns">
+    <div class="col">
+      <table class="tight">
+        <tr><th>B</th><th>OOB acc.</th><th>Coverage</th><th>Disagree.</th><th>Margin</th></tr>
+        <tr><td>1</td><td>34.83</td><td>37.08</td><td>—</td><td>1.0000</td></tr>
+        <tr><td>5</td><td>30.95</td><td>87.50</td><td>0.8163</td><td>0.2275</td></tr>
+        <tr><td>10</td><td>35.02</td><td>98.75</td><td>0.8064</td><td>0.2313</td></tr>
+        <tr><td>25</td><td>59.58</td><td>100.00</td><td>0.8014</td><td>0.2535</td></tr>
+        <tr><td>50</td><td>70.00</td><td>100.00</td><td>0.7944</td><td>0.2670</td></tr>
+        <tr><td>100</td><td>76.67</td><td>100.00</td><td>0.7919</td><td>0.2641</td></tr>
+        <tr><td>200</td><td>79.17</td><td>100.00</td><td>0.7897</td><td>0.2718</td></tr>
+      </table>
+      <p>OOB coverage is only 37.08% at B=1 and reaches 100% by B=25. Thereafter OOB accuracy rises from 59.58% to 79.17%. The validation margin generally increases, but disagreement falls slightly from 0.8163 at B=5 to 0.7897 at B=200. More trees do not create increasing diversity; they average many already diverse, noisy decisions until the leading class becomes more stable.</p>
+
+      <h2>2.4 Clean and masked faces</h2>
+      <table>
+        <tr><th>Model</th><th>Set</th><th>Acc.</th><th>Confidence</th></tr>
+        <tr><td>Tree</td><td>Clean</td><td>57.50</td><td>0.9813</td></tr>
+        <tr><td>Tree</td><td>Masked</td><td>33.75</td><td>1.0000</td></tr>
+        <tr><td>Bagging (200)</td><td>Clean</td><td>87.50</td><td>0.4079</td></tr>
+        <tr><td>Bagging (200)</td><td>Masked</td><td>70.00</td><td>0.2974</td></tr>
+      </table>
+      <p>Masking costs the tree 23.75 percentage points and bagging 17.50. The tree's leaf-probability confidence rises to 1.0 while its accuracy collapses: masked images are being routed into pure leaves, not recognised more reliably. Bagging confidence, defined as the winning vote fraction, falls as expected.</p>
+
+      <p>For identities 0 and 1 (indices 6 and 10), the tree predicts 15 and 16, while 65 and 74 bagged trees recover the correct classes. These are unstable partition errors. The shared mistakes differ. Identity 4 (index 41) is nearly tied between wrong class 37 (58 votes) and true class 4 (53); identity 12 (index 127) receives only eight correct votes amid a diffuse set of alternatives. Aggregation can remove unstable errors, but not errors shared by most base models.</p>
+    </div>
+    <div class="col">
+      <figure class="case-figure">
+        <img src="../question_1/outputs/figures/q1d_case_evidence.png" alt="Four Q1 face cases and vote evidence">
+        <figcaption><strong>Figure 3.</strong> Two clean faces where bagging corrects the tree and two where both fail. Each panel gives the true label, tree prediction and all nonzero bagging votes.</figcaption>
+      </figure>
+    </div>
+  </div>
+  <div class="page-number">2 / 7</div>
+</section>
+
+<section class="page">
+  <h2>3. Q2: Multiclass SAMME</h2>
+  <div class="columns">
+    <div class="col">
+      <h3>3.1 One complete three-class round</h3>
+      <p>My scratch implementation follows the SAMME weighted error and class-score construction [3]:</p>
+      <div class="equation">α<sub>t</sub> = log((1−ε<sub>t</sub>)/ε<sub>t</sub>) + log(K−1), &nbsp; S<sub>k</sub>(x)=Σ<sub>t</sub>α<sub>t</sub>1[h<sub>t</sub>(x)=k].</div>
+      <p>The toy problem has nine one-dimensional samples: three consecutive examples from each of classes 0, 1 and 2. A depth-1 tree predicts [0,0,0,1,1,1,1,1,1]. With initial weights 1/9, the last three samples are wrong, so ε=1/3 and α=log(4)=1.386294. The update is <em>w</em><sub>i</sub>←<em>w</em><sub>i</sub>exp(α1[wrong]).</p>
+      <table class="tiny">
+        <tr><th>Samples</th><th>True</th><th>Pred.</th><th>Initial</th><th>Wrong</th><th>Unnorm.</th><th>Final</th></tr>
+        <tr><td>0–2</td><td>0</td><td>0</td><td>1/9</td><td>No</td><td>1/9</td><td>1/18</td></tr>
+        <tr><td>3–5</td><td>1</td><td>1</td><td>1/9</td><td>No</td><td>1/9</td><td>1/18</td></tr>
+        <tr><td>6–8</td><td>2</td><td>1</td><td>1/9</td><td>Yes</td><td>4/9</td><td>2/9</td></tr>
+      </table>
+      <p>The unnormalised weights sum to 2. The face code calls this same update. A learner is accepted only when ε&lt;1−1/K; an invalid learner is logged and training stops. Zero error uses a numerical floor for finite α and then stops. Tests cover both cases, and no learner was rejected in the official run.</p>
+
+      <h3>3.2 Validation selection</h3>
+      <p>The following matrix gives validation accuracy (%) for each depth/round pair. Selection used no test values.</p>
+      <table>
+        <tr><th>Depth \ rounds</th><th>10</th><th>25</th><th>50</th><th>100</th></tr>
+        <tr><td>1</td><td>5.00</td><td>10.00</td><td>10.00</td><td>11.25</td></tr>
+        <tr><td>2</td><td>7.50</td><td>8.75</td><td>16.25</td><td>20.00</td></tr>
+        <tr><td>3</td><td>16.25</td><td>25.00</td><td>22.50</td><td>32.50</td></tr>
+        <tr><td>4</td><td>17.50</td><td>26.25</td><td>43.75</td><td><strong>51.25</strong></td></tr>
+      </table>
+      <p>Depth 4 with 100 rounds was best and therefore frozen. It reaches 100% training accuracy but only 51.25% validation accuracy. By contrast, 100 depth-1 learners reach 15.83% training accuracy, so very shallow partitions underfit this 40-class problem.</p>
+    </div>
+    <div class="col">
+      <figure class="compact-figure">
+        <img src="../question_2/outputs/figures/q2b_validation_grid.png" alt="SAMME validation grid">
+        <figcaption><strong>Figure 4.</strong> Training and validation accuracy over the complete boosting grid.</figcaption>
+      </figure>
+      <figure class="compact-figure">
+        <img src="../question_2/outputs/figures/q2b_selected_round_diagnostics.png" alt="Selected SAMME round diagnostics">
+        <figcaption><strong>Figure 5.</strong> Per-round weighted error, learner weight, largest sample weight and total mass of the ten heaviest samples for the selected model.</figcaption>
+      </figure>
+      <p>Across the selected run, weighted errors range from 0.3714 to 0.8750, always below the 39/40 random threshold. Learner weights range from 1.7177 to 4.1897. The maximum individual sample weight reaches 0.0910 at round 41, and the ten heaviest training faces carry 0.4344 of the mass at round 100. The model increasingly concentrates on a small difficult subset.</p>
+    </div>
+  </div>
+  <div class="page-number">3 / 7</div>
+</section>
+
+<section class="page">
+  <h2>3.3 Bagging versus boosting</h2>
+  <figure class="wide">
+    <img src="../question_2/outputs/figures/q2c_heaviest_training_face.png" alt="Heaviest boosting face and history">
+    <figcaption><strong>Figure 6.</strong> Identity 36, dataset index 362, receives the largest final SAMME weight. The plot relates its prediction history to repeated changes in sample weight.</figcaption>
+  </figure>
+  <div class="columns">
+    <div class="col">
+      <table class="tight">
+        <tr><th>Learners</th><th>Model</th><th>Train</th><th>Val.</th><th>Test</th><th>Fit time (s)</th></tr>
+        <tr><td>25</td><td>Bag.</td><td>100.00</td><td>76.25</td><td>76.25</td><td>23.04</td></tr>
+        <tr><td>25</td><td>Boost</td><td>62.50</td><td>26.25</td><td>26.25</td><td>7.12</td></tr>
+        <tr><td>50</td><td>Bag.</td><td>100.00</td><td>82.50</td><td>81.25</td><td>45.33</td></tr>
+        <tr><td>50</td><td>Boost</td><td>98.75</td><td>43.75</td><td>43.75</td><td>14.44</td></tr>
+        <tr><td>100</td><td>Bag.</td><td>100.00</td><td>81.25</td><td>83.75</td><td>90.93</td></tr>
+        <tr><td>100</td><td>Boost</td><td>100.00</td><td>51.25</td><td>52.50</td><td>28.80</td></tr>
+      </table>
+      <p>Times cover only base-learner fitting on the same machine. Boosting is about three times faster because its trees stop at depth 4, whereas bagging uses unrestricted trees. At 100 learners, however, bagging is 31.25 points more accurate on the clean test.</p>
+      <p>Index 362 is misclassified in 87 of 100 rounds and finishes with weight 0.08428. Mistakes in rounds 89–92 raise it from 0.01170 to 0.06846; a correct round 93 prediction lowers it to 0.00458, then seven more mistakes return it to 0.08428. The wrong labels vary, indicating that successive shallow partitions rarely isolate this face rather than confusing it with one fixed identity.</p>
+
+      <h3>3.4 Missing-region response</h3>
+      <table>
+        <tr><th>Model</th><th>Clean acc.</th><th>Conf.</th><th>Masked acc.</th><th>Conf.</th></tr>
+        <tr><td>Tree</td><td>57.50</td><td>0.9813</td><td>33.75</td><td>1.0000</td></tr>
+        <tr><td>Bagging</td><td>87.50</td><td>0.4079</td><td>70.00</td><td>0.2974</td></tr>
+        <tr><td>Boosting</td><td>52.50</td><td>0.1207</td><td>53.75</td><td>0.1143</td></tr>
+      </table>
+      <p>Boosting gains one correct prediction after masking, but its mean winning vote falls. I treat the 1.25-point increase as split-specific label flips, not evidence that removing information helps.</p>
+    </div>
+    <div class="col">
+      <figure class="compact-figure">
+        <img src="../question_2/outputs/figures/q2d_mask_response_case.png" alt="Different masking response for bagging and boosting">
+        <figcaption><strong>Figure 7.</strong> Identity 9, index 97, is correctly recognised by both clean models. Masking flips bagging but leaves boosting narrowly correct.</figcaption>
+      </figure>
+      <p>For this face, clean bagging gives identity 9 46/200 votes. After masking, 44.5% of trees change prediction; disagreement rises from 0.9022 to 0.9132 and class 13 wins 42 votes against 26 for class 9. The winning margin falls from 0.115 to 0.080.</p>
+      <p>Only 15% of boosting learners change label, carrying 15.64% of total α. Its correct class-9 weighted vote falls from 0.11363 to 0.08207, barely above class 13 at 0.08152—a margin of 0.00055. The sequentially trained depth-4 learners react more consistently than the independently bootstrapped deep trees for this face, but the near tie is fragile rather than confident.</p>
+    </div>
+  </div>
+  <div class="page-number">4 / 7</div>
+</section>
+
+<section class="page">
+  <h2>4. Q3: Bias and variance as measurements</h2>
+  <div class="columns">
+    <div class="col">
+      <h3>4.1 Resampling and definitions</h3>
+      <p>I kept the 80 clean test faces fixed and generated 30 training sets. Within each identity, six draws with replacement came only from that identity's original six training faces. Every selected model was refitted without retuning.</p>
+      <p>For each test face I saved a 40-class vector: leaf probabilities for a tree, vote fractions for bagging, and normalised α-weighted votes for boosting. For target one-hot vector <em>e</em><sub>i</sub>, prediction <em>p</em><sub>r</sub>(<em>x</em><sub>i</sub>) and repetition mean <span style="text-decoration:overline">p</span>(<em>x</em><sub>i</sub>), I computed</p>
+      <div class="equation">Bias² = (1/N)Σ<sub>i</sub> ||<span style="text-decoration:overline">p</span>(x<sub>i</sub>)−e<sub>i</sub>||²,<br>Variance = (1/NR)Σ<sub>i,r</sub> ||p<sub>r</sub>(x<sub>i</sub>)−<span style="text-decoration:overline">p</span>(x<sub>i</sub>)||².</div>
+      <p>Every saved vector was checked to have class order 0–39 and unit sum. Accuracy standard deviations use <em>ddof</em>=1; bias and variance use the population denominators above.</p>
+
+      <h3>4.2 Selected models over 30 refits</h3>
+      <table>
+        <tr><th>Model</th><th>Bias²</th><th>Variance</th><th>Mean acc.</th><th>SD</th></tr>
+        <tr><td>Tree</td><td>0.40394</td><td>0.64272</td><td>47.67</td><td>4.59</td></tr>
+        <tr><td>Bagging (200)</td><td>0.49887</td><td>0.02062</td><td><strong>78.29</strong></td><td>3.26</td></tr>
+        <tr><td>Boosting (100)</td><td>0.88015</td><td><strong>0.01587</strong></td><td>33.63</td><td>7.47</td></tr>
+      </table>
+      <p>The unrestricted tree has the smallest bias but by far the largest variance. Bagging raises bias moderately and reduces variance by 96.79% relative to the selected single tree when using 200 trees. Boosting is the most stable in the vector sense, yet its high bias leaves it least accurate on average. Bias and variance use the whole class vector, so neither is identical to classification error.</p>
+    </div>
+    <div class="col">
+      <figure class="compact-figure">
+        <img src="../question_3/outputs/figures/q3a_selected_models.png" alt="Selected model bias variance and accuracy">
+        <figcaption><strong>Figure 8.</strong> Measured bias², variance and accuracy distribution for the three frozen models.</figcaption>
+      </figure>
+      <h3>4.3 Depth study</h3>
+      <p>Validation had selected an unrestricted tree, so no finite limit can be “deeper” than the selected setting. I therefore predeclared depth 2 as shallow, depth 16 as a much deeper finite contrast, and retained the selected unrestricted model as the deepest setting. All use minimum leaf size 2; the paired bagged ensembles use 100 trees.</p>
+      <table class="tight">
+        <tr><th>Depth</th><th>Model</th><th>Bias²</th><th>Variance</th><th>Acc.</th><th>Var. removed</th></tr>
+        <tr><td>2</td><td>Tree</td><td>0.90476</td><td>0.04633</td><td>6.71</td><td>—</td></tr>
+        <tr><td>2</td><td>Bag.</td><td>0.92765</td><td>0.01063</td><td>14.21</td><td>77.05%</td></tr>
+        <tr><td>16</td><td>Tree</td><td>0.63420</td><td>0.24113</td><td>29.17</td><td>—</td></tr>
+        <tr><td>16</td><td>Bag.</td><td>0.65462</td><td>0.01987</td><td>67.12</td><td>91.76%</td></tr>
+        <tr><td>None</td><td>Tree</td><td>0.40394</td><td>0.64272</td><td>47.67</td><td>—</td></tr>
+        <tr><td>None</td><td>Bag.</td><td>0.49893</td><td>0.02450</td><td>77.12</td><td>96.19%</td></tr>
+      </table>
+      <p>Increasing depth lowers single-tree bias and sharply raises variance. Bagging removes 0.03570, 0.22126 and 0.61822 variance units at depths 2, 16 and unrestricted. The small accompanying increase in bias is outweighed by variance removal for the deeper settings.</p>
+    </div>
+  </div>
+  <div class="page-number">5 / 7</div>
+</section>
+
+<section class="page">
+  <h2>4.4 Does the deepest setting gain most from bagging?</h2>
+  <figure class="wide">
+    <img src="../question_3/outputs/figures/q3b_depth_bias_variance_accuracy.png" alt="Depth bias variance and accuracy">
+    <figcaption><strong>Figure 9.</strong> Bias², variance and mean clean-test accuracy across the three predeclared depth settings.</figcaption>
+  </figure>
+  <figure class="wide">
+    <img src="../question_3/outputs/figures/q3c_depth_evidence.png" alt="Leaf occupancy disagreement and bagging accuracy gain">
+    <figcaption><strong>Figure 10.</strong> Leaf occupancy, pairwise disagreement and the accuracy gain from 100-tree bagging.</figcaption>
+  </figure>
+  <div class="columns">
+    <div class="col">
+      <p><span class="result">No.</span> Bagging improves accuracy by 7.50 points at depth 2, 37.96 at depth 16, and 29.46 for unrestricted trees. The deepest trees show the largest variance reduction, but not the largest accuracy gain.</p>
+      <p>A depth-2 tree has 3.03 leaves and 79.33 training cases per leaf on average. Its bias is 0.90476. Disagreement is high (0.9604), but it represents diversity among crude, mostly wrong partitions; the bagged model reaches only 14.21%.</p>
+      <p>At depth 16, a tree averages 18.27 leaves and 13.23 cases per leaf. Bias has fallen to 0.63420, while variance 0.24113 leaves enough instability to average away. Disagreement remains high at 0.8844, and bagging reaches 67.12%. This balance produces the largest gain.</p>
+      <p>Unrestricted trees average depth 34.9, 40 leaves and six cases per leaf. Their lower bias (0.40394) and higher starting accuracy leave less headroom. Bagging removes 96.19% of variance, but bias rises to 0.49893 and disagreement is lower at 0.8094. Variance removal and discrete accuracy improvement are therefore related but not interchangeable.</p>
+    </div>
+    <div class="col">
+      <h2>4.5 Final accuracy and robustness summary</h2>
+      <table>
+        <tr><th>Model</th><th>Clean</th><th>Masked</th><th>Δ</th><th>Bias²</th><th>Var.</th></tr>
+        <tr><td>Tree</td><td>57.50</td><td>33.75</td><td>−23.75</td><td>0.40394</td><td>0.64272</td></tr>
+        <tr><td>Bagging</td><td><strong>87.50</strong></td><td><strong>70.00</strong></td><td>−17.50</td><td>0.49887</td><td>0.02062</td></tr>
+        <tr><td>Boosting</td><td>52.50</td><td>53.75</td><td>+1.25</td><td>0.88015</td><td><strong>0.01587</strong></td></tr>
+      </table>
+      <p>The frozen tree is most sensitive to missing pixels and most sensitive to resampled training data. Bagging is the best recogniser on both test sets and remains stable across refits. Boosting has the lowest variance and smallest observed mask change, but also the highest bias. Its one-image masked gain accompanies lower winning confidence, so it is not evidence of genuine robustness.</p>
+
+      <h2>5. Discussion</h2>
+      <p>The experiments separate three ideas that can look similar in a single accuracy number. First, deep trees are expressive but unstable: their class vectors vary sharply when a few training faces are duplicated or omitted. Second, bagging works well here because these unstable trees make sufficiently different errors, and plurality voting preserves useful identity detail while removing much of the variability. Third, boosting's sequential focus is reproducible, but the depth-4 learners retain a strong systematic error on this 40-class task. Low variance cannot compensate for that bias.</p>
+    </div>
+  </div>
+  <div class="page-number">6 / 7</div>
+</section>
+
+<section class="page">
+  <div class="columns">
+    <div class="col">
+      <h2>6. Reproducibility and checks</h2>
+      <p>The repository contains the saved split, roll-number seed, frozen JSON configurations, scratch bagging and boosting code, raw CSV tables, run logs, plotting code, figures and exact commands. Versions are pinned in <code>requirements.txt</code>. The official environment used Python 3.13.7, NumPy 2.2.6 and scikit-learn 1.7.2.</p>
+      <p>Three independent verification programs check selection rules, vector normalisation, OOB conventions, SAMME updates, saved case votes and the Q3 bias–variance formulas. The Q3 verifier also checks all 30 resamples, eight arrays of shape (30,80,40), per-repetition checkpoints and the identity-wise sampling rule. The complete unit-test suite contains 12 passing tests.</p>
+      <p>The 30-refit Q3 run used deterministic child seeds and took 1740.85 s with ten parallel jobs. Its resample digest begins <code>956e0203</code> and protocol digest begins <code>1de73ca9</code>. These identifiers prevent cached checkpoints from being mixed across protocols.</p>
+
+      <h2>7. Limitations</h2>
+      <p>All conclusions are conditional on one roll-number split and an 80-image test set. A 1.25-point accuracy change is one image, so small clean/masked differences should not be overinterpreted. Timing comparisons are specific to this machine and to the measured fitting boundary. Finally, the Q3 resampling distribution is centred on the six observed training faces per identity; it measures training-sample sensitivity within this assignment protocol, not population-wide facial variation.</p>
+
+      <h2>8. Conclusion</h2>
+      <p>On this split, the selected 200-tree bagged classifier gives the best balance of accuracy, stability and missing-region tolerance. Its clean accuracy is 30 points above the single tree and 35 points above selected boosting. Measured variance confirms that aggregation stabilises deep trees, while the depth study shows why the largest variance reduction need not produce the largest accuracy gain. Boosting supplies the counterexample needed for the final comparison: it has the lowest variance, yet high bias keeps its accuracy below bagging.</p>
+    </div>
+    <div class="col">
+      <h2>References</h2>
+      <div class="refs">
+        <p>[1] F. Samaria and A. Harter. “Parameterisation of a stochastic model for human face identification.” In <em>Proc. 2nd IEEE Workshop on Applications of Computer Vision</em>, pages 138–142, 1994. doi:10.1109/ACV.1994.341300.</p>
+        <p>[2] L. Breiman. “Bagging predictors.” <em>Machine Learning</em>, 24(2):123–140, 1996. doi:10.1007/BF00058655.</p>
+        <p>[3] J. Zhu, H. Zou, S. Rosset, and T. Hastie. “Multi-class AdaBoost.” <em>Statistics and Its Interface</em>, 2(3):349–360, 2009. doi:10.4310/SII.2009.v2.n3.a8.</p>
+        <p>[4] F. Pedregosa et al. “Scikit-learn: Machine learning in Python.” <em>Journal of Machine Learning Research</em>, 12(85):2825–2830, 2011.</p>
+      </div>
+
+      <h2>Artifact map</h2>
+      <table>
+        <tr><th>Claim</th><th>Primary saved evidence</th></tr>
+        <tr><td>Split and seed</td><td><code>shared/config.json</code>, <code>split_indices.npz</code></td></tr>
+        <tr><td>Q1 selection/diagnostics</td><td><code>question_1/outputs/</code></td></tr>
+        <tr><td>SAMME histories</td><td><code>question_2/outputs/</code></td></tr>
+        <tr><td>Bias–variance vectors</td><td><code>q3_prediction_vectors.npz</code></td></tr>
+        <tr><td>Full verification</td><td><code>verify_question_*.py</code></td></tr>
+      </table>
+      <p class="note">Percentages in tables are rounded to two decimal places and bias/variance values to five decimals. Full-precision values remain in the saved CSV and JSON artifacts. No displayed metric was transcribed from an unsaved run.</p>
+    </div>
+  </div>
+  <div class="page-number">7 / 7</div>
+</section>
+
+</body>
+</html>

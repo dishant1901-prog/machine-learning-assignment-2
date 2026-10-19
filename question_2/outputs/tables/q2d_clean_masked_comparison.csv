@@ -1,0 +1,7 @@
+test_set,model,accuracy,mean_winning_confidence,confidence_definition
+clean,single_tree,0.575,0.98125,maximum leaf class probability
+clean,bagging,0.875,0.40793749999999995,winning hard-vote fraction
+clean,boosting,0.525,0.12070322378570841,winning normalized weighted-vote fraction
+masked,single_tree,0.3375,1.0,maximum leaf class probability
+masked,bagging,0.7,0.297375,winning hard-vote fraction
+masked,boosting,0.5375,0.1143180168458989,winning normalized weighted-vote fraction

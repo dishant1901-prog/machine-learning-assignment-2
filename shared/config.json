@@ -1,0 +1,30 @@
+{
+  "student": {
+    "name": "Dishant Kaushik",
+    "roll_number": "M24MA2003",
+    "repository_url": "https://github.com/dishant1901-prog/machine-learning-assignment-2"
+  },
+  "data": {
+    "data_home": "shared/data",
+    "split_file": "shared/split_indices.npz"
+  },
+  "question_1": {
+    "output_dir": "question_1/outputs",
+    "max_depths": [2, 4, 8, 16, null],
+    "min_samples_leaf": [1, 2, 4],
+    "ensemble_sizes": [1, 5, 10, 25, 50, 100, 200]
+  },
+  "question_2": {
+    "output_dir": "question_2/outputs",
+    "weak_learner_depths": [1, 2, 3, 4],
+    "round_counts": [10, 25, 50, 100]
+  },
+  "question_3": {
+    "output_dir": "question_3/outputs",
+    "resample_file": "shared/q3_resample_indices.npz",
+    "n_repetitions": 30,
+    "n_jobs": 10,
+    "depth_study": [2, 16, null],
+    "depth_study_bagging_estimators": 100
+  }
+}
